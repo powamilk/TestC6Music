@@ -1,0 +1,42 @@
+﻿@page "/add"
+@using DAL.Entities
+@using PL.Service
+@inject IArtisService ArtisService
+@inject NavigationManager NavigationManage
+
+<h3>Add</h3>
+<EditForm Model="artist" OnValidSubmit="HandleSubmit">
+    <div class="mb-3">
+        <label>Name</label>
+        <InputText class="form-control" @bind-Value="artist.Name" Required="true"/>
+    </div>
+    <div class="mb-3">
+        <label>Bio</label>
+        <InputText class="form-control" @bind-Value="artist.Bio" Required="true"/>
+    </div>
+    <div class="mb-3">
+        <label>Country</label>
+        <InputText class="form-control" @bind-Value="artist.Country" Required="true" />
+    </div>
+    <div class="mb-3">
+        <label>DateOfBirth</label>
+        <InputDate class="form-control" @bind-Value="artist.DateOfBirth" Required="true" />
+    </div>
+    <button class="btn btn-primary" type="submit">Thêm</button>
+    <button class="btn btn-secondary" type="button" @onclick="Back">Hủy</button>
+</EditForm>
+
+@code {
+    private Artist artist = new Artist();
+
+    private async Task HandleSubmit()
+    {
+        await ArtisService.AddAsync(artist);
+        NavigationManage.NavigateTo("/list");
+    }
+
+    private async Task Back()
+    {
+        NavigationManage.NavigateTo("/list");
+    }
+}

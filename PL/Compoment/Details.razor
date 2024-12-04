@@ -1,0 +1,47 @@
+﻿@page "/details/{id:int}"
+@using DAL.Entities
+@using PL.Service
+@inject IArtisService ArtisService
+@inject NavigationManager NavigationManage
+
+<h3>Artist Details</h3>
+
+@if (artist == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="mb-3">
+        <label>Name: </label> <span>@artist.Name</span>
+    </div>
+    <div class="mb-3">
+        <label>Bio: </label> <span>@artist.Bio</span>
+    </div>
+    <div class="mb-3">
+        <label>Country: </label> <span>@artist.Country</span>
+    </div>
+    <div class="mb-3">
+        <label>Date of Birth: </label> <span>@artist.DateOfBirth?.ToShortDateString()</span>
+    </div>
+    <div class="mb-3">
+        <label>Image: </label> <img src="@artist.ImagePath" width="200" />
+    </div>
+
+    <button class="btn btn-secondary" @onclick="Back">Back</button>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+    private Artist artist;
+
+    protected override async Task OnInitializedAsync()
+    {
+        artist = await ArtisService.GetByIdAsync(id);
+    }
+
+    private void Back()
+    {
+        NavigationManage.NavigateTo("/list");
+    }
+}

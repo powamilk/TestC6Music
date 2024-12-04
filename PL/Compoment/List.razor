@@ -1,0 +1,96 @@
+﻿@page "/list"
+@using DAL.Entities
+@using PL.Service
+@inject IArtisService ArtisService
+@inject NavigationManager NavigationManage
+
+<h3>List</h3>
+
+@if (arits == null)
+{
+    <p>Loading...</p>
+}
+else if (!arits.Any())
+{
+    <p>Không có danh sách nào.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Bio</th>
+                <th>Country</th>
+                <th>DateOfBirth</th>
+                <th>Image</th> 
+                <th>Hành Động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var arti in arits)
+            {
+                <tr>
+                    <td>@arti.Name</td>
+                    <td>@arti.Bio</td>
+                    <td>@arti.Country</td>
+                    <td>@arti.DateOfBirth?.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(arti.ImagePath))
+                        {
+                            <img src="@arti.ImagePath" alt="Image" style="width: 100px; height: 100px;" />
+                        }
+                        else
+                        {
+                            <span>No Image</span>
+                        }
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => Edit(arti.ArtistId)">Sửa</button>
+                        <button class="btn btn-danger" @onclick="() => Delete(arti.ArtistId)">Delete</button>
+                        <button class="btn btn-info" @onclick="() => ViewDetails(arti.ArtistId)">View Details</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<button class="btn btn-primary" @onclick="Add">Add</button>
+
+@code {
+    private IEnumerable<Artist> arits;
+
+    protected override async Task OnInitializedAsync()
+    {
+        arits = await ArtisService.GetAllAsync();
+    }
+
+    private void Add()
+    {
+        NavigationManage.NavigateTo("/add");
+    }
+
+    private void Edit(int id)
+    {
+        NavigationManage.NavigateTo($"/edit/{id}");
+    }
+
+    private void ViewDetails(int id)
+    {
+        NavigationManage.NavigateTo($"/details/{id}");
+    }
+
+    private async Task Delete(int id)
+    {
+        try
+        {
+            await ArtisService.DeleteAsync(id); 
+            arits = await ArtisService.GetAllAsync(); 
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting artist: {ex.Message}");
+        }
+    }
+}
